@@ -60,7 +60,6 @@ function clearInputs() {
   const errorMsgExists = document.querySelector("div.alert-danger");
   const outputLength = String(yearInput);
   if (outputLength.length > 0) {
-    console.log(outputLength.length);
     clearOuputs();
   }
 
@@ -84,11 +83,17 @@ function validateInputs() {
   monthOutput.innerText = "";
   dayOutput.innerText = "";
   let validationCounter = 0;
+  const currentYear = currentDate.get("year");
+  const currentMonth = currentDate.get("month") + 1;
+  const currentDay = currentDate.get("date");
+  const userDayInput = Number(dayInput.value);
+  const userMonthInput = Number(monthInput.value);
+  const userYearInput = Number(yearInput.value);
 
   const dayCount = daysInMonth(yearInput.value, monthInput.value);
 
   // Check if the entered day is not blank, or not less than 1, or not greater than the number of days of the entered month in the entered year
-  if (dayInput.value > dayCount || dayInput.value < 1 || dayInput.value == "") {
+  if (userDayInput > dayCount || userDayInput < 1 || userDayInput == "") {
     errorMsg(dayInput);
     clearFields();
     addAlert();
@@ -100,7 +105,7 @@ function validateInputs() {
   }
 
   // Check if the entered month is not blank, or not less than 1, or not greater than 12
-  if (monthInput.value < 1 || monthInput.value > 12 || monthInput.value == "") {
+  if (userMonthInput < 1 || userMonthInput > 12 || userMonthInput == "") {
     errorMsg(monthInput);
     clearFields();
     addAlert();
@@ -112,7 +117,7 @@ function validateInputs() {
   }
 
   // Check if the year entered is not blank
-  if (yearInput.value == "") {
+  if (userYearInput == "") {
     errorMsg(yearInput);
     clearFields();
     addAlert();
@@ -122,7 +127,7 @@ function validateInputs() {
   }
 
   // Check if the year entered is not in the future
-  if (yearInput.value > currentDate.get("year")) {
+  if (userYearInput > currentYear) {
     errorMsg(yearInput);
     clearFields();
     addAlert();
@@ -132,10 +137,7 @@ function validateInputs() {
   }
 
   // Check if entered month is not greater than the current month if the entered year is the same as the current year
-  if (
-    yearInput.value == currentDate.get("year") &&
-    monthInput.value > currentDate.get("month") + 1
-  ) {
+  if (userYearInput == currentYear && userMonthInput > currentMonth) {
     errorMsg(monthInput);
     clearFields();
     addAlert();
@@ -145,19 +147,20 @@ function validateInputs() {
   }
 
   // Check if entered day is not greater than the current day if the entered month and year is the same as, or less
-  if (
-    yearInput.value == currentDate.get("year") &&
-    monthInput.value <= currentDate.get("month") + 1
-  ) {
-    if (dayInput.value > currentDate.get("date")) {
-      errorMsg(dayInput);
-      clearFields();
-      addAlert();
-      divErrorNode.innerText = `Your date of birth cannot be set in the future!`;
-      validationCounter = 0;
-      return;
-    } else {
+  if (userYearInput == currentYear) {
+    if (userMonthInput < currentMonth) {
       validationCounter += 1;
+    } else {
+      if (userDayInput > currentDay) {
+        errorMsg(dayInput);
+        clearFields();
+        addAlert();
+        divErrorNode.innerText = `Your date of birth cannot be set in the future!`;
+        validationCounter = 0;
+        return;
+      } else {
+        validationCounter += 1;
+      }
     }
   }
 
